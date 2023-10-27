@@ -35,17 +35,19 @@ public class Client {
         }
 
         System.out.println("Authenticated user.");
-        service.restart();
-        service.print("file1.pdf", printers[0]);
-        service.print("file2.pdf", printers[0]);
-        service.print("file3.pdf", printers[0]);
-        service.queue(printers[0]);
-        service.topQueue(printers[0], 2);
-        service.queue(printers[0]);
-        service.setConfig("myParameter", "100");
-        service.setConfig("myParameter", "200");
-        service.readConfig("myParameter");
-        System.out.println("-----------------------------------");
+        if (service.getSessionToken()!=0){
+            service.restart();
+            System.out.println(service.print("file1.pdf", printers[0]));
+            System.out.println(service.print("file2.pdf", printers[0]));
+            System.out.println(service.print("file3.pdf", printers[0]));
+            System.out.println(service.queue(printers[0]));
+            service.topQueue(printers[0], 2);
+            System.out.println(service.queue(printers[0]));
+            service.setConfig("myParameter", "100");
+            service.setConfig("myParameter", "200");
+            System.out.println("Configuration: "+service.readConfig("myParameter"));
+            System.out.println("-----------------------------------");
+        }
 
     }
 

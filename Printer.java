@@ -35,14 +35,14 @@ public class Printer {
         return status;
     }
 
-    public String setStatus() {
+    public String setStatus(String Status) {
         return this.status = status;
     }
 
     public void queue() { // lists the print queue for a given printer on the user's display in lines of
                           // the form <job number> <file name>
         for (Job j : printerQueue) {
-            System.out.println(j.jobNumber + "   " + j.fileName); // TODO: print on user's display
+            System.out.println(j.jobNumber + "   " + j.fileName); 
         }
     }
 
@@ -67,5 +67,14 @@ public class Printer {
 
     public void clearPrinterQueue() { // Clears the printer's queue so it can restart
         printerQueue.clear();
+    }
+
+    public String printJobs(){
+        String print="";
+        for (Job j : printerQueue) {
+            print= print + "Job number: " + j.jobNumber+ " and filename "+j.fileName +"\n"; 
+            }
+
+        return print;
     }
 }

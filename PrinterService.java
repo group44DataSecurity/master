@@ -19,7 +19,7 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
 
     private List<User> loggedClientList = new ArrayList<>();
     
-    private int sessionToken;
+    private int sessionToken=0;
 
     // Create the log file
     String fileName = "log.txt"; // TODO: Add logs for remaining commands
@@ -68,27 +68,35 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
     private Printer getPrinter(String printer) {
         Printer foundPrinter = printers.get(printer);
         if (foundPrinter == null) {
-            // TODO: Return error / add new printer?
             return null;
         }
         return foundPrinter;
     }
 
-    public void print(String filename, String printer) throws RemoteException { /// prints file filename on the
+    public String print(String filename, String printer) throws RemoteException { /// prints file filename on the
                                                                                 /// specified printer
         Printer foundPrinter = getPrinter(printer);
         if (foundPrinter != null) {
             foundPrinter.addToQueue(filename);
         }
+        else {return "Printer not found.";}
+        logEntry("Printing file: "+filename+ " to printer "+printer);
+        return "Printing file: "+filename+ " to printer "+printer;
     }
 
-    public void queue(String printer) throws RemoteException { // lists the print queue for a given printer on the
+    public String queue(String printer) throws RemoteException { // lists the print queue for a given printer on the
                                                                // user's display in lines of the form <job number> <file
                                                                // name>
         Printer foundPrinter = getPrinter(printer);
+        String print="";
         if (foundPrinter != null) {
             foundPrinter.queue();
+            print=foundPrinter.printJobs();
         }
+        
+
+        logEntry(print);
+        return print; 
     }
 
     public void topQueue(String printer, int job) throws RemoteException { // moves job to the top of the queue
@@ -96,6 +104,7 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
         if (foundPrinter != null) {
             foundPrinter.topQueue(job);
         }
+         logEntry("Job " + job+ " moved to the top of queue of printer "+printer);
     }
 
     public void start() throws RemoteException { // starts the print server
@@ -114,20 +123,26 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
             p.clearPrinterQueue();
         }
         start();
+
+         logEntry("--Print server restarted.");
     }
 
-    public void status(String printer) throws RemoteException { // prints status of printer on the user's display
+    public String status(String printer) throws RemoteException { // prints status of printer on the user's display
+        return "Printer "+printer+" with status "; //TODO
 
     }
 
-    public void readConfig(String parameter) throws RemoteException { // prints the value of the parameter on the print
+    public String readConfig(String parameter) throws RemoteException { // prints the value of the parameter on the print
                                                                       // server to the user's display
-        System.out.println(configs.get(parameter)); // TODO: print on user's display
+        logEntry(configs.get(parameter));
+        return "The Configuration is "+configs.get(parameter);
+
     }
 
     public void setConfig(String parameter, String value) throws RemoteException { // sets the parameter on the print
                                                                                    // server to value
-        configs.put(parameter, value);
+        
+        logEntry("Configuration changed to "+configs.put(parameter,value));
     }
 
     private void logEntry(String text) { // Writes the log file
@@ -154,8 +169,15 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
         return false;
     } 
 
-    public int getSessionToken(int token){
+    public int getSessionToken(int token) throws RemoteException{
         sessionToken=token; 
         return sessionToken;
     }
+
+     public int getSessionToken() throws RemoteException{
+       
+        return sessionToken;
+    }
+
+   
 }
