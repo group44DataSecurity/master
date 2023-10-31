@@ -4,13 +4,14 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.security.NoSuchAlgorithmException;
 
 import java.util.Scanner;
 
 public class Client {
     static Scanner input = new Scanner(System.in);
 
-    public static void main(String[] args) throws MalformedURLException, NotBoundException, RemoteException {
+    public static void main(String[] args) throws MalformedURLException, NotBoundException, RemoteException, NoSuchAlgorithmException {
         int port = 5099;
         // String name = "hello";
         // HelloService service = (HelloService)

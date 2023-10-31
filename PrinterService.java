@@ -4,6 +4,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 //needed to write the log file
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -11,12 +12,15 @@ import java.io.IOException;
 // Encryption
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
 
 public class PrinterService extends UnicastRemoteObject implements PrinterServiceInterface {
 
     private HashMap<String, Printer> printers; // list with all the printers
     private HashMap<String, String> configs; // List with all parameters and values
-
+    private Map<String, List<byte[]>> database = new HashMap<String, List<byte[]>>(); // Username and Hashed p/w database
+    
     private List<User> loggedClientList = new ArrayList<>();
     
     private int sessionToken=0;
@@ -34,29 +38,38 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
         loggedClientList.add(new User("client2", "passowrd2"));
         
         for (User loggedClient : loggedClientList) {
-            PasswordEncrypt(loggedClient.getPassword());
+            PasswordEncryptStore(loggedClient, loggedClient.getPassword(), generateSalt());
         }
         
     }
 
-    public void PasswordEncrypt(String password) throws NoSuchAlgorithmException {
-        String hashPassword = hashPassword(password);
-        System.out.println("This is the password hashed: " + hashPassword);
+    public void PasswordEncryptStore(User user, String password, byte[] salted) throws NoSuchAlgorithmException {
+        // Encyrpt the password.
+        byte[] hashPassword = hashPassword(password, salted);
+
+        //Create a list containing the two byte[] hashed pw and salt.
+        List<byte[]> pwsaltList = new ArrayList<>();
+        pwsaltList.add(hashPassword);
+        pwsaltList.add(salted);
+
+        // Add the username and list containing encrypted pw and salt to the HashMap (our simulation of a database)
+        database.put(user.getUsername(), pwsaltList);
+    } 
+
+    public static byte[] generateSalt() throws NoSuchAlgorithmException{
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        return salt;
     }
 
-    public void SavePasswordFile() throws NoSuchAlgorithmException{
-
-    }
-
-    private static String hashPassword(String password) throws NoSuchAlgorithmException {
-        MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+    private static byte[] hashPassword(String password, byte[] salt) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+        messageDigest.update(salt); // Link salt to the hash
         byte[] hasedBytes = messageDigest.digest(password.getBytes());
         
-        StringBuilder stringBuilder = new StringBuilder();
-        for (byte b : hasedBytes) {
-            stringBuilder.append(String.format("%02x", b));
-        }
-        return stringBuilder.toString();
+        messageDigest.reset(); // Reset digest to ensure no values are stored.
+        return hasedBytes;
     }
 
     public void initPrinters(String[] printerList) throws RemoteException {
@@ -158,16 +171,31 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
         }
     }
 
-    public boolean authenticate(User user) throws RemoteException{
-        //magic for commands
-        for (User loggedClient : loggedClientList){
-            if (loggedClient.getUsername().equals(user.getUsername()) && loggedClient.getPassword().equals(user.getPassword())){
-                return true;
-            }
+    public static String toHex(byte[] bytes){
+        StringBuilder hexString = new StringBuilder(); //(2 * bytes.length);
+        for (byte b : bytes) {
+            hexString.append(String.format("%02x", b));
         }
-        System.out.println("User not found");
+        return hexString.toString();
+    }
+
+    public boolean authenticate(User user) throws RemoteException, NoSuchAlgorithmException{
+
+        if (database.containsKey(user.getUsername())) {
+            List<byte[]> pwsaltList = database.get(user.getUsername());
+
+            byte[] password = pwsaltList.getFirst();
+            byte[] salt = pwsaltList.getLast();
+            byte[] passwordIn = hashPassword(user.getPassword(), salt);
+
+            // Check user entered password against out hashed and salted database
+            if (toHex(password).equals(toHex(passwordIn))) {
+                return true;
+            }  
+        } 
+
         return false;
-    } 
+    }
 
     public int getSessionToken(int token) throws RemoteException{
         sessionToken=token; 
