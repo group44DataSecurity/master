@@ -34,3 +34,21 @@ Job number: 1 and filename file2.pdf
 Configuration changed to null
 Configuration changed to 100
 200
+--Print server stopped.
+--Print server started.
+--Print server restarted.
+Printing file: file1.pdf to printer Printer1
+Printing file: file2.pdf to printer Printer1
+Printing file: file3.pdf to printer Printer1
+Job number: 0 and filename file1.pdf
+Job number: 1 and filename file2.pdf
+Job number: 2 and filename file3.pdf
+
+Job 2 moved to the top of queue of printer Printer1
+Job number: 2 and filename file3.pdf
+Job number: 0 and filename file1.pdf
+Job number: 1 and filename file2.pdf
+
+Configuration changed to null
+Configuration changed to 100
+200

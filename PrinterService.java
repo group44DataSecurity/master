@@ -184,8 +184,11 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
         if (database.containsKey(user.getUsername())) {
             List<byte[]> pwsaltList = database.get(user.getUsername());
 
-            byte[] password = pwsaltList.getFirst();
-            byte[] salt = pwsaltList.getLast();
+            //byte[] password = pwsaltList.getFirst();
+            //byte[] salt = pwsaltList.getLast();
+
+            byte[] password = pwsaltList.get(0);
+            byte[] salt = pwsaltList.get(pwsaltList.size() - 1);
             byte[] passwordIn = hashPassword(user.getPassword(), salt);
 
             // Check user entered password against out hashed and salted database
