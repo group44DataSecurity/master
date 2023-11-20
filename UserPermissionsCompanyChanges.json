@@ -1,0 +1,49 @@
+{
+    "alice": [
+       "print",
+       "queue",
+       "topQueue",
+       "start",
+       "stop",
+       "restart",
+       "status",
+       "readConfig",
+       "setConfig"
+    ],
+    "cecilia": [
+       "print",
+       "queue",
+       "topQueue",
+       "restart"
+    ],
+    "david": [
+       "print",
+       "queue"
+    ],
+    "erica": [
+       "print",
+       "queue"
+    ],
+    "fred": [
+       "print",
+       "queue"
+    ],
+    "henry": [
+      "print",
+      "queue"
+   ],
+   "ida": [
+      "print",
+      "queue",
+      "topQueue",
+      "restart"
+   ],
+    "george": [
+      "start",
+      "stop",
+      "restart",
+      "status",
+      "readConfig",
+      "setConfig"
+    ]
+ }

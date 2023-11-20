@@ -47,6 +47,9 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
         printers = new HashMap<String, Printer>();
         configs = new HashMap<String, String>();
 
+        // Uncomment the correct user/pw database depending on what UserPermissions file is being used!
+
+        // Original scenario
         loggedClientList.add(new User("alice", "alice123"));
         loggedClientList.add(new User("bob", "bob123"));
         loggedClientList.add(new User("cecilia", "cecilia123"));
@@ -54,6 +57,16 @@ public class PrinterService extends UnicastRemoteObject implements PrinterServic
         loggedClientList.add(new User("erica", "erica123"));
         loggedClientList.add(new User("fred", "fred123"));
         loggedClientList.add(new User("george", "george123"));
+
+        // Scenario 2 after company changes are made
+        /* loggedClientList.add(new User("alice", "alice123"));
+        loggedClientList.add(new User("cecilia", "cecilia123"));
+        loggedClientList.add(new User("david", "david123"));
+        loggedClientList.add(new User("erica", "erica123"));
+        loggedClientList.add(new User("fred", "fred123"));
+        loggedClientList.add(new User("george", "george123"));
+        loggedClientList.add(new User("henry", "henry123"));
+        loggedClientList.add(new User("ida", "ida123")); */
 
         // initialize printers
         initPrinters(printersNames);
